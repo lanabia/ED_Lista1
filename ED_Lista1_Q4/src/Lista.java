@@ -1,23 +1,27 @@
 
 public class Lista {
 
-	// TAD
-	int info;
-	Lista next;
+	// TAD Lista Circular
+	No cursor;
+	int size;
 
 	// cria lista
 	public Lista() {
-
+		this.size = 0;
 	}
 
 	public Lista(int val) {
-		this.info = val;
-		this.next = this;
+		this.cursor = new No(val);
+		this.size = this.size + 1;
 	}
 
-	public Lista(int val, Lista next) {
-		this.next = next;
-		this.info = val;
+	public int getInfo() {
+		return cursor.info;
+	}
+
+	public No next() {
+		this.cursor = this.cursor.next;
+		return this.cursor;
 	}
 
 }

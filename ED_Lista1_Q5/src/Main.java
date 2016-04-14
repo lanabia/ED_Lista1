@@ -23,8 +23,6 @@ public class Main {
 
 	public static int VAZIO = 1;
 	public static int NAO_VAZIO = 0;
-	public static int count1 = 0;
-	public static int count2 = 0;
 
 	public static void main(String[] args) throws Throwable {
 
@@ -73,105 +71,119 @@ public class Main {
 
 	public static Lista lst_insere(Lista lst, int val) {
 		if (lst_ta_vazia(lst) == VAZIO)
-			lst = new Lista(val);
-		else if (lst.cursor.next == null) // só tem um elemento
-		{
-			No novoNo = new No(val, lst.cursor);
-			lst.cursor.next = novoNo;
-		} else {
-			No novoNo = new No(val, lst.cursor);
-			for (int i = 1; i <= lst.size; i++)
-				lst.next();
-			lst.cursor.next = novoNo;
-			lst.next();
-			lst.size = lst.size + 1;
-		}
-		return lst;
+			return new Lista(val);
+
+		Lista newLs = new Lista(val, lst);
+		Lista aux = lst.next;
+		if (aux != null) {
+			while (aux.next.info != lst.info)
+				aux = aux.next;
+		} else
+			aux = lst;
+		aux.next = newLs;
+		return newLs;
 
 	}
 
 	public static void lst_imprime(Lista lst) {
 
+		Lista aux = lst;
+
 		if (lst_ta_vazia(lst) == VAZIO)
 			System.out.println("Lista vazia");
 		else {
 			System.out.println("Lista:");
-			for (int i = 1; i <= lst.size; i++) {
-				System.out.print(lst.getInfo() + " ");
-				lst.next();
-			}
+			if (aux.next == null) // só tem um elemento
+				System.out.print(aux.info);
+
+			else
+				do {
+					System.out.print(aux.info + " ");
+					aux = aux.next;
+				} while (aux.info != lst.info);
 		}
 	}
 
 	public static void lst_imprime_recursivo(Lista lst) {
-		if (lst_ta_vazia(lst) != VAZIO && count1 <= lst.size) {
-			System.out.print(lst.getInfo() + " ");
-			lst.next();
-			count1 = count1 + 1;
-			lst_imprime_recursivo(lst);
+		Lista aux = lst;
+
+		if (lst_ta_vazia(lst) != VAZIO && aux.info != lst.info) {
+			System.out.print(aux.info + " ");
+			lst_imprime_recursivo(aux.next);
 		}
 
 	}
 
 	public static int lst_ta_vazia(Lista lst) {
-		if ((lst == null) || (lst.size == 0))
+		if ((lst == null) || (lst.next == null && lst.info == 0))
 			return VAZIO;
 
 		return NAO_VAZIO;
 	}
 
-	public static No lst_busca(Lista lst, int val) {
+	public static Lista lst_busca(Lista lst, int val) {
+		Lista aux = lst;
 
 		if (lst_ta_vazia(lst) == VAZIO)
-			System.out.println("Lista vazia");
-		else {
-			for (int i = 1; i <= lst.size; i++) {
-				if (lst.getInfo() == val)
-					return lst.cursor;
-				lst.next();
-			}
-		}
+			return null;
+
+		do {
+			if (aux.info == val)
+				return aux;
+			aux = aux.next;
+		} while (aux.info != lst.info);
+
 		return null;
 	}
 
-	public static Lista lst_retira(Lista lst, int val) {
+	public static Lista lst_retira(Lista lst, int val) throws Throwable {
 
-		No anterior = lst.cursor;
-		lst.next(); // avança um elemento
+		Lista anterior = lst;
+		Lista atual = lst.next;
 
-		if (lst_ta_vazia(lst) != VAZIO) {
-			for (int i = 1; i <= lst.size; i++) {
-				if (lst.getInfo() == val) {
-					anterior.next = lst.cursor.next;
-				}
-				anterior = lst.cursor;
-				lst.next();
+		while (lst_ta_vazia(anterior) == NAO_VAZIO && atual.info != lst.info) {
+			if (atual.info == val) {
+				if (lst.next == null) // lista com um só elemento
+					return null;
+
+				anterior.next = atual.next;
 			}
+			anterior = atual;
+			atual = atual.next;
+
+		}
+		// se for o primeiro elemento
+		if (atual.info == val) {
+			anterior.next = atual.next;
+			return atual.next;
 		}
 		return lst;
 	}
 
-	public static Lista lst_retira_recursivo(Lista lst, int val) {
-		No anterior = lst.cursor;
-		lst.next();
-		if (lst_ta_vazia(lst) != VAZIO && count2 <= lst.size) {
-			if (lst.getInfo() == val) {
-				anterior.next = lst.cursor.next;
-			}
-			lst.next();
-			count2 = count2 + 1;
-			lst_retira_recursivo(lst, val);
-		}
+	public static Lista lst_retira_recursivo(Lista lst, int val) throws Throwable {
+		Lista atual = lst;
+		Lista anterior = null;
 
+		if (anterior == null && atual.info == val)
+			return atual.next;
+
+		anterior = atual;
+		atual = atual.next;
+
+		if (atual.info == val) {
+			anterior.next = atual.next;
+			atual = null;
+		} else
+			lst_retira_recursivo(atual, val);
 		return lst;
 
 	}
 
 	public static Lista lst_libera(Lista lst) {
-		No aux = lst.cursor;
-		for (int i = 1; i <= lst.size; i++) {
+		Lista aux = lst;
+		while (lst_ta_vazia(aux) == NAO_VAZIO) {
 			aux = aux.next;
-			lst.cursor = null;
+			aux = null;
 		}
 		return null;
 	}
